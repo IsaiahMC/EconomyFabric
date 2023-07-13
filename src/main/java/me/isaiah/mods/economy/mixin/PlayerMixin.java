@@ -17,7 +17,7 @@ public class PlayerMixin implements EconomyUser {
     private BigDecimal balance;
     private File moneyFile;
 
-    private void moneySetup() {
+    private void money_setup() {
         balance = new BigDecimal(FabricEconomyMod.DEFAULT_BALANCE);
         moneyFile = new File(FabricEconomyMod.BALANCE_DIR, ((PlayerEntity)(Object)this).getUuidAsString() + ".yml");
         moneyFile.getParentFile().mkdirs();
@@ -39,10 +39,10 @@ public class PlayerMixin implements EconomyUser {
                 e.printStackTrace();
             }
         }
-        saveBalanceToFile();
+        save_balance_to_file();
     }
 
-    public void saveBalanceToFile() {
+    public void save_balance_to_file() {
         String yml = "name: " + ((PlayerEntity)(Object)this).getName().asString() + "\n"
                 + "balance: " + balance;
         try {
@@ -55,19 +55,21 @@ public class PlayerMixin implements EconomyUser {
 
     @Override
     public BigDecimal getMoney() {
-        if (null == moneyFile)
-            moneySetup();
+        if (null == moneyFile) {
+            money_setup();
+        }
 
         return balance;
     }
 
     @Override
     public void setMoney(BigDecimal balance) {
-        if (null == moneyFile)
-            moneySetup();
+        if (null == moneyFile) {
+            money_setup();
+        }
         this.balance = balance;
 
-        saveBalanceToFile();
+        save_balance_to_file();
     }
 
 }

@@ -1,6 +1,6 @@
 package me.isaiah.mods.economy.commands;
 
-import java.util.UUID;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -19,9 +19,8 @@ import me.isaiah.mods.economy.api.Economy;
 import me.isaiah.mods.economy.api.UserDoesNotExistException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
-import net.minecraft.text.TextColor;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class BalCommand implements com.mojang.brigadier.Command<ServerCommandSource>, Predicate<ServerCommandSource>, SuggestionProvider<ServerCommandSource> {
@@ -35,7 +34,6 @@ public class BalCommand implements com.mojang.brigadier.Command<ServerCommandSou
     @Override
     public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         builder = builder.createOffset(builder.getInput().lastIndexOf(' ') + 1);
-
         return builder.buildFuture();
     }
 
@@ -48,13 +46,28 @@ public class BalCommand implements com.mojang.brigadier.Command<ServerCommandSou
     public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         try {
-            LiteralText txt = new LiteralText("Balance: $" + Economy.getMoneyExact(player.getName().asString()));
-            txt.setStyle(Style.EMPTY.withColor(TextColor.fromFormatting(Formatting.GREEN)));
-            player.sendSystemMessage(txt, UUID.randomUUID());
+            String msg = "Balance: $" + Economy.getMoneyExact(player.getName().asString());
+            message(player, Formatting.GREEN, msg);
         } catch (UserDoesNotExistException e) {
             e.printStackTrace();
         }
         return 0;
     }
+    
+    public void message(ServerPlayerEntity cs, Formatting color, String message) {
+		try {
+			if (null == color) {
+				cs.sendMessage(Text.of(message), false);
+				return;
+			}
+
+			List<Text> txts = Text.of(message).getWithStyle(Style.EMPTY.withColor(color));
+			for (Text t : txts) {
+				cs.sendMessage(t, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }
