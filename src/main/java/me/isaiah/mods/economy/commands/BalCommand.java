@@ -1,6 +1,5 @@
 package me.isaiah.mods.economy.commands;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -19,9 +18,7 @@ import me.isaiah.mods.economy.api.Economy;
 import me.isaiah.mods.economy.api.UserDoesNotExistException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 public class BalCommand implements com.mojang.brigadier.Command<ServerCommandSource>, Predicate<ServerCommandSource>, SuggestionProvider<ServerCommandSource> {
 
@@ -44,17 +41,38 @@ public class BalCommand implements com.mojang.brigadier.Command<ServerCommandSou
 
     @Override
     public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         try {
-            String msg = "Balance: $" + Economy.getMoneyExact(player.getName().asString());
-            message(player, Formatting.GREEN, msg);
+            String msg = "&aBalance: &f$" + Economy.getMoneyExact(player.getName().getString());
+            msg_plr(player, msg);
         } catch (UserDoesNotExistException e) {
             e.printStackTrace();
         }
         return 0;
     }
     
-    public void message(ServerPlayerEntity cs, Formatting color, String message) {
+    public void msg_plr(ServerPlayerEntity cs, String message) {
+		try {
+			cs.sendMessage(Text.of(translate_alternate_color_codes('&', message)), false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
+    private static final char COLOR_CHAR = '\u00A7';
+    private static String translate_alternate_color_codes(char altColorChar, String textToTranslate) {
+        char[] b = textToTranslate.toCharArray();
+        for (int i = 0; i < b.length - 1; i++) {
+            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
+                b[i] = COLOR_CHAR;
+                b[i+1] = Character.toLowerCase(b[i+1]);
+            }
+        }
+        return new String(b);
+    }
+
+    
+    /*public void message(ServerPlayerEntity cs, Formatting color, String message) {
 		try {
 			if (null == color) {
 				cs.sendMessage(Text.of(message), false);
@@ -68,6 +86,6 @@ public class BalCommand implements com.mojang.brigadier.Command<ServerCommandSou
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 }

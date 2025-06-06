@@ -35,7 +35,6 @@ public class PlayerMixin implements EconomyUser {
                         balance = new BigDecimal(value);
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -43,12 +42,11 @@ public class PlayerMixin implements EconomyUser {
     }
 
     public void save_balance_to_file() {
-        String yml = "name: " + ((PlayerEntity)(Object)this).getName().asString() + "\n"
+        String yml = "name: " + ((PlayerEntity)(Object)this).getName().getString() + "\n"
                 + "balance: " + balance;
         try {
             Files.write(moneyFile.toPath(), yml.getBytes());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -58,7 +56,6 @@ public class PlayerMixin implements EconomyUser {
         if (null == moneyFile) {
             money_setup();
         }
-
         return balance;
     }
 
@@ -68,7 +65,6 @@ public class PlayerMixin implements EconomyUser {
             money_setup();
         }
         this.balance = balance;
-
         save_balance_to_file();
     }
 
