@@ -13,6 +13,8 @@ import me.isaiah.mods.economy.api.DefaultEconomyProvider;
 import me.isaiah.mods.economy.api.IEconomyProvider;
 import me.isaiah.mods.economy.api.OfflineEconomyUser;
 import me.isaiah.mods.economy.commands.BalCommand;
+import me.isaiah.mods.economy.commands.EconCommand;
+import me.isaiah.mods.economy.commands.PayCommand;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
@@ -67,8 +69,9 @@ public class FabricEconomyMod implements ModInitializer {
                 e.printStackTrace();
             }
         }
-        if (null == PROVIDER)
+        if (null == PROVIDER) {
             PROVIDER = new DefaultEconomyProvider();
+        }
 
         String content = "# Config File for FabricEconomy\nconfig-version:1\ndefault-balance: " + DEFAULT_BALANCE + "\n" +
                 "provider: " + PROVIDER.getClass().getName();
@@ -101,12 +104,32 @@ public class FabricEconomyMod implements ModInitializer {
         }
 
         BalCommand c1 = new BalCommand();
+        BalCommand c1a = new BalCommand();
+        BalCommand c1b = new BalCommand();
+        PayCommand c2 = new PayCommand();
+        EconCommand c3 = new EconCommand();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             c1.register(dispatcher, "bal");
+            c1a.register(dispatcher, "balance");
+            c1b.register(dispatcher, "money");
+            c2.register(dispatcher, "pay");
+            c3.register(dispatcher, "economy");
         });
 
         LOGGER.info("FabricEconomy enabled!");
+    }
+
+	private static final char COLOR_CHAR = '\u00A7';
+    public static String translate_alternate_color_codes(char altColorChar, String textToTranslate) {
+        char[] b = textToTranslate.toCharArray();
+        for (int i = 0; i < b.length - 1; i++) {
+            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
+                b[i] = COLOR_CHAR;
+                b[i+1] = Character.toLowerCase(b[i+1]);
+            }
+        }
+        return new String(b);
     }
 
 }

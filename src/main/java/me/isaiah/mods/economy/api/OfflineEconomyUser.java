@@ -85,4 +85,9 @@ public class OfflineEconomyUser implements EconomyUser {
         return null != MINECRAFT_SERVER.getPlayerManager().getPlayer(name);
     }
 
+	@Override
+	public void economymod$send_message(String msg) {
+		// TODO Auto-generated method stub
+	}
+
 }
