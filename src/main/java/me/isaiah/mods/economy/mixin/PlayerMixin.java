@@ -10,11 +10,10 @@ import org.spongepowered.asm.mixin.Unique;
 
 import me.isaiah.mods.economy.FabricEconomyMod;
 import me.isaiah.mods.economy.api.EconomyUser;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 
-@Mixin(PlayerEntity.class)
+@Mixin(Player.class)
 public class PlayerMixin implements EconomyUser {
 
 	@Unique
@@ -26,7 +25,7 @@ public class PlayerMixin implements EconomyUser {
 	@Unique
     private void money_setup() {
         balance = new BigDecimal(FabricEconomyMod.DEFAULT_BALANCE);
-        moneyFile = new File(FabricEconomyMod.BALANCE_DIR, ((PlayerEntity)(Object)this).getUuidAsString() + ".yml");
+        moneyFile = new File(FabricEconomyMod.BALANCE_DIR, ((Player)(Object)this).getStringUUID() + ".yml");
         moneyFile.getParentFile().mkdirs();
         if (moneyFile.exists()) {
             try {
@@ -49,7 +48,7 @@ public class PlayerMixin implements EconomyUser {
     }
 
     public void save_balance_to_file() {
-        String yml = "name: " + ((PlayerEntity)(Object)this).getName().getString() + "\n"
+        String yml = "name: " + ((Player)(Object)this).getName().getString() + "\n"
                 + "balance: " + balance;
         try {
             Files.write(moneyFile.toPath(), yml.getBytes());
@@ -77,7 +76,7 @@ public class PlayerMixin implements EconomyUser {
 
 	@Override
 	public void economymod$send_message(String msg) {
-		( (PlayerEntity) (Object) this ).sendMessage(Text.of(FabricEconomyMod.translate_alternate_color_codes('&', msg)), false);
+		( (Player) (Object) this ).displayClientMessage(Component.nullToEmpty(FabricEconomyMod.translate_alternate_color_codes('&', msg)), false);
 	}
 
 

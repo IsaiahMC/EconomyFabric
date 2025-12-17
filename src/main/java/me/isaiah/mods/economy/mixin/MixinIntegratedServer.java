@@ -6,12 +6,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import me.isaiah.mods.economy.FabricEconomyMod;
-import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.client.server.IntegratedServer;
 
 @Mixin(IntegratedServer.class)
 public class MixinIntegratedServer {
 
-    @Inject(at = @At(value = "HEAD"), method = "setupServer()Z")
+    @Inject(at = @At(value = "HEAD"), method = "initServer()Z")
     private void initVar(CallbackInfoReturnable<Boolean> callbackInfo) {
         FabricEconomyMod.MINECRAFT_SERVER = (IntegratedServer) (Object) this;
     }

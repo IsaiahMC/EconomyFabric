@@ -19,8 +19,8 @@ import me.isaiah.mods.economy.commands.EconCommand;
 import me.isaiah.mods.economy.commands.PayCommand;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
 
 public class FabricEconomyMod implements ModInitializer {
 
@@ -141,7 +141,7 @@ public class FabricEconomyMod implements ModInitializer {
          });
     }
 
-    private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+    private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
     	BalCommand c1 = new BalCommand();
         BalCommand c1a = new BalCommand();
         BalCommand c1b = new BalCommand();

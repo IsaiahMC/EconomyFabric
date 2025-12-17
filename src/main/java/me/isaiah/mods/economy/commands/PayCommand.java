@@ -20,23 +20,23 @@ import me.isaiah.mods.economy.FabricEconomyMod;
 import me.isaiah.mods.economy.api.Economy;
 import me.isaiah.mods.economy.api.EconomyUser;
 import me.isaiah.mods.economy.api.UserDoesNotExistException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 
-public class PayCommand implements com.mojang.brigadier.Command<ServerCommandSource>, Predicate<ServerCommandSource>, SuggestionProvider<ServerCommandSource> {
+public class PayCommand implements com.mojang.brigadier.Command<CommandSourceStack>, Predicate<CommandSourceStack>, SuggestionProvider<CommandSourceStack> {
 
 	private static final String USAGE_PAY = "&4Usage: &c/pay <player> <amount>";
 	private static final String PAY_NEGATIVE = "&4Error: &cYou can not send negative amounts!";
 	
-    public LiteralCommandNode<ServerCommandSource> register(CommandDispatcher<ServerCommandSource> dispatcher, String label) {
-        return dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal(label).requires(this).executes(this)
-                .then(RequiredArgumentBuilder.<ServerCommandSource, String>argument("args", StringArgumentType.greedyString()).suggests(this).executes(this))
+    public LiteralCommandNode<CommandSourceStack> register(CommandDispatcher<CommandSourceStack> dispatcher, String label) {
+        return dispatcher.register(LiteralArgumentBuilder.<CommandSourceStack>literal(label).requires(this).executes(this)
+                .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("args", StringArgumentType.greedyString()).suggests(this).executes(this))
         );
     }
 
     @Override
-    public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+    public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         builder = builder.createOffset(builder.getInput().lastIndexOf(' ') + 1);
         
         String input = builder.getInput();
@@ -58,13 +58,13 @@ public class PayCommand implements com.mojang.brigadier.Command<ServerCommandSou
     }
 
     @Override
-    public boolean test(ServerCommandSource t) {
+    public boolean test(CommandSourceStack t) {
         return true;
     }
 
     @Override
-    public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity plr = context.getSource().getPlayerOrThrow();
+    public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer plr = context.getSource().getPlayerOrException();
 
         String text = context.getInput();
         String[] args = text.split(" ");
@@ -112,9 +112,9 @@ public class PayCommand implements com.mojang.brigadier.Command<ServerCommandSou
         return 0;
     }
     
-    public void msg(ServerPlayerEntity cs, String message) {
+    public void msg(ServerPlayer cs, String message) {
 		try {
-			cs.sendMessage(Text.of(translate_alternate_color_codes('&', message)), false);
+			cs.displayClientMessage(Component.nullToEmpty(translate_alternate_color_codes('&', message)), false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
