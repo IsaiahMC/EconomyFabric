@@ -1,7 +1,5 @@
 package me.isaiah.mods.economy.api;
 
-import static me.isaiah.mods.economy.FabricEconomyMod.MINECRAFT_SERVER;
-
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -9,6 +7,7 @@ import java.nio.file.Files;
 import java.util.UUID;
 
 import me.isaiah.mods.economy.FabricEconomyMod;
+import me.isaiah.mods.economy.Utils;
 
 public class OfflineEconomyUser implements EconomyUser {
 
@@ -59,7 +58,7 @@ public class OfflineEconomyUser implements EconomyUser {
     @Override
     public BigDecimal getMoney() {
         if (isOnline())
-            return ((EconomyUser) MINECRAFT_SERVER.getPlayerManager().getPlayer(name)).getMoney();
+            return ((EconomyUser) Utils.getPlayer(name)).getMoney();
 
         if (null == moneyFile)
             moneySetup();
@@ -70,7 +69,7 @@ public class OfflineEconomyUser implements EconomyUser {
     @Override
     public void setMoney(BigDecimal balance) {
         if (isOnline()) {
-            ((EconomyUser) MINECRAFT_SERVER.getPlayerManager().getPlayer(name)).setMoney(balance);
+            ((EconomyUser) Utils.getPlayer(name)).setMoney(balance);
             return;
         }
 
@@ -82,7 +81,7 @@ public class OfflineEconomyUser implements EconomyUser {
     }
 
     public boolean isOnline() {
-        return null != MINECRAFT_SERVER.getPlayerManager().getPlayer(name);
+        return null != Utils.getPlayer(name);
     }
 
 	@Override

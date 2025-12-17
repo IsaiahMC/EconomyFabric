@@ -10,4 +10,12 @@ public interface EconomyUser {
     
     public void economymod$send_message(String msg);
 
+    public default BigDecimal economy$getMoney() {
+    	return getMoney();
+    }
+    
+    public default void economy$setMoney(BigDecimal balance) {
+    	setMoney(balance);
+    }
+    
 }

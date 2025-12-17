@@ -1,7 +1,5 @@
 package me.isaiah.mods.economy.api;
 
-import static me.isaiah.mods.economy.FabricEconomyMod.MINECRAFT_SERVER;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 
@@ -9,6 +7,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import me.isaiah.mods.economy.FabricEconomyMod;
+import me.isaiah.mods.economy.Utils;
 
 /**
  * The Default Economy Provider
@@ -19,7 +18,7 @@ public class DefaultEconomyProvider implements IEconomyProvider {
     public final MathContext MATH_CONTEXT = MathContext.DECIMAL128;
 
     public EconomyUser getUser(String name) throws UserDoesNotExistException {
-        EconomyUser user = (EconomyUser) MINECRAFT_SERVER.getPlayerManager().getPlayer(name);
+        EconomyUser user = (EconomyUser) Utils.getPlayer(name);
         if (null != user)
             return user;
 
@@ -268,7 +267,7 @@ public class DefaultEconomyProvider implements IEconomyProvider {
      * @return true, if the user exists
      */
     public boolean playerExists(String name) {
-        return null != ((EconomyUser) MINECRAFT_SERVER.getPlayerManager().getPlayer(name));
+        return null != ((EconomyUser) Utils.getPlayer(name));
     }
 
     public boolean isNPC(String name) throws Exception {

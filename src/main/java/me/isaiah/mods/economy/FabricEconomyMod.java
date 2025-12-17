@@ -9,6 +9,8 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.mojang.brigadier.CommandDispatcher;
+
 import me.isaiah.mods.economy.api.DefaultEconomyProvider;
 import me.isaiah.mods.economy.api.IEconomyProvider;
 import me.isaiah.mods.economy.api.OfflineEconomyUser;
@@ -16,9 +18,9 @@ import me.isaiah.mods.economy.commands.BalCommand;
 import me.isaiah.mods.economy.commands.EconCommand;
 import me.isaiah.mods.economy.commands.PayCommand;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
 
 public class FabricEconomyMod implements ModInitializer {
 
@@ -103,21 +105,54 @@ public class FabricEconomyMod implements ModInitializer {
             offlineMap.put(name, new OfflineEconomyUser(name, UUID.fromString(uuid)));
         }
 
+        /*
         BalCommand c1 = new BalCommand();
         BalCommand c1a = new BalCommand();
         BalCommand c1b = new BalCommand();
         PayCommand c2 = new PayCommand();
         EconCommand c3 = new EconCommand();
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+        net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, arg2) -> {
             c1.register(dispatcher, "bal");
             c1a.register(dispatcher, "balance");
             c1b.register(dispatcher, "money");
             c2.register(dispatcher, "pay");
             c3.register(dispatcher, "economy");
-        });
+        });*/
+        
+        boolean hasAPI = hasFabricAPI();
+
+        if (hasAPI) {
+        	registerCommands_fabricapi();
+        } else {
+        	LOGGER.info("WARN: Could not find fabric-command-api to register commands!");
+        }
 
         LOGGER.info("FabricEconomy enabled!");
+    }
+    
+    private boolean hasFabricAPI() {
+    	return FabricLoader.getInstance().isModLoaded("fabric-command-api-v2") || FabricLoader.getInstance().isModLoaded("fabric-api");
+    }
+    
+    private void registerCommands_fabricapi() {
+    	 net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, arg2) -> {
+    		 registerCommands(dispatcher);
+         });
+    }
+
+    private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+    	BalCommand c1 = new BalCommand();
+        BalCommand c1a = new BalCommand();
+        BalCommand c1b = new BalCommand();
+        PayCommand c2 = new PayCommand();
+        EconCommand c3 = new EconCommand();
+
+    	c1.register(dispatcher, "bal");
+        c1a.register(dispatcher, "balance");
+        c1b.register(dispatcher, "money");
+        c2.register(dispatcher, "pay");
+        c3.register(dispatcher, "economy");
     }
 
 	private static final char COLOR_CHAR = '\u00A7';
