@@ -1,12 +1,11 @@
 plugins {
-	id 'fabric-loom' version '1.13-SNAPSHOT'
+	id 'fabric-loom' version '1.14-SNAPSHOT'
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+// sourceCompatibility = JavaVersion.VERSION_17
+// targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
@@ -82,6 +81,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 jar {
+	archiveFileName  = project.archives_base_name
 	from "LICENSE"
 }
 
